@@ -1,41 +1,46 @@
 package com.example.taketook.entity;
 
 import com.example.taketook.utils.RentTariff;
+import com.example.taketook.utils.RentType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public class Dot {
     @Id
-    private Long id;
+    private String id;
 
-    private Long automateId;
-    private Long listingId; // TODO: make nullable
+    private String automateId;
+    private String listingId; // TODO: make nullable
     private RentTariff rentTariff;
+    private RentType rentType;
     private Long rentTime; // TODO: make nullable
+    private Boolean free;
 
     public Dot() {}
 
-    public Dot(Long automateId, Long listingId, RentTariff rentTariff, Long rentTime) {
+    public Dot(String automateId, String listingId, RentTariff rentTariff, RentType rentType, Long rentTime, Boolean free) {
         this.automateId = automateId;
         this.listingId = listingId;
         this.rentTariff = rentTariff;
+        this.rentType = rentType;
         this.rentTime = rentTime;
+        this.free = free;
     }
 
-    public Long getAutomateId() {
+    public String getAutomateId() {
         return automateId;
     }
 
-    public void setAutomateId(Long automateId) {
+    public void setAutomateId(String automateId) {
         this.automateId = automateId;
     }
 
-    public Long getListingId() {
+    public String getListingId() {
         return listingId;
     }
 
-    public void setListingId(Long listingId) {
+    public void setListingId(String listingId) {
         this.listingId = listingId;
     }
 
@@ -47,11 +52,27 @@ public class Dot {
         this.rentTariff = rentTariff;
     }
 
+    public RentType getRentType() {
+        return rentType;
+    }
+
+    public void setRentType(RentType rentType) {
+        this.rentType = rentType;
+    }
+
     public Long getRentTime() {
         return rentTime;
     }
 
     public void setRentTime(Long rentTime) {
         this.rentTime = rentTime;
+    }
+
+    public Boolean getFree() {
+        return free;
+    }
+
+    public void setFree(Boolean free) {
+        this.free = free;
     }
 }

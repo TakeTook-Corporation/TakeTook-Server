@@ -6,36 +6,35 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class Feedback {
     @Id
-    private Long id;
+    private String id;
 
-    private Long userId;
-    private Long listingId;
+    private String userId;
+    private String listingId;
     private Long starCount;
     private String text;
-    // private User author;
 
     public Feedback() {}
 
-    public Feedback(Long userId, Long listingId, Long starCount, String text) {
+    public Feedback(String userId, String listingId, Long starCount, String text) {
         this.userId = userId;
         this.listingId = listingId;
         this.starCount = starCount;
         this.text = text;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public Long getListingId() {
+    public String getListingId() {
         return listingId;
     }
 
-    public void setListingId(Long listingId) {
+    public void setListingId(String listingId) {
         this.listingId = listingId;
     }
 

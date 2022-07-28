@@ -7,23 +7,32 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class Listing {
     @Id
-    private Long id;
+    private String id;
 
     private String title;
     private String description;
-    // private User author;
-    private Long dot_id;
+    private String author;
+    private String dot;
     private Boolean active;
     private Category category;
 
     public Listing() {}
 
-    public Listing(String title, String description, Long dot_id, Boolean active, Category category) {
+    public Listing(String title, String description, String author, String dot, Boolean active, Category category) {
         this.title = title;
         this.description = description;
-        this.dot_id = dot_id;
+        this.author = author;
+        this.dot = dot;
         this.active = active;
         this.category = category;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getTitle() {
@@ -42,12 +51,12 @@ public class Listing {
         this.description = description;
     }
 
-    public Long getDot_id() {
-        return dot_id;
+    public String getDot() {
+        return dot;
     }
 
-    public void setDot_id(Long dot_id) {
-        this.dot_id = dot_id;
+    public void setDot(String dot) {
+        this.dot = dot;
     }
 
     public Boolean getActive() {

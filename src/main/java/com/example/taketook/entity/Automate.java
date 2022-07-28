@@ -8,16 +8,16 @@ import java.util.List;
 @Document
 public class Automate {
     @Id
-    private Long id;
+    private String id;
 
     private Double lat;
     private Double lon;
     private String address;
-    private List<Dot> dots;
+    private List<String> dots;
 
     public Automate() {}
 
-    public Automate(Double lat, Double lon, String address, List<Dot> dots) {
+    public Automate(Double lat, Double lon, String address, List<String> dots) {
         this.lat = lat;
         this.lon = lon;
         this.address = address;
@@ -48,11 +48,11 @@ public class Automate {
         this.address = address;
     }
 
-    public List<Dot> getDots() {
+    public List<String> getDots() {
         return dots;
     }
 
-    public void setDots(List<Dot> dots) {
+    public void setDots(List<String> dots) {
         this.dots = dots;
     }
 }
