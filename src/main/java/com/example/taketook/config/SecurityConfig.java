@@ -2,6 +2,7 @@ package com.example.taketook.config;
 
 import com.example.taketook.service.UserDetailsServiceImpl;
 import com.example.taketook.utils.AuthEntryPointJwt;
+import com.example.taketook.utils.RoleEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +38,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
-        // default global auth. manager
         return super.authenticationManagerBean();
     }
 
@@ -53,14 +53,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // configuring DaoAuthenticationProvider
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // rules for all paths.
-        // can be changed to decorators in controllers
         http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(errorHandler)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests().anyRequest().permitAll();

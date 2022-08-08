@@ -11,10 +11,10 @@ public class Dot {
     private String id;
 
     private String automateId;
-    private String listingId; // TODO: make nullable
+    private String listingId;
     private RentTariff rentTariff;
     private RentType rentType;
-    private Long rentTime; // TODO: make nullable
+    private Long rentTime;
     private Boolean free;
 
     public Dot() {}
@@ -26,6 +26,10 @@ public class Dot {
         this.rentType = rentType;
         this.rentTime = rentTime;
         this.free = free;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getAutomateId() {

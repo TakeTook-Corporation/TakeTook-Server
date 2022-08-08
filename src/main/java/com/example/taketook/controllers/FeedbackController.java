@@ -12,8 +12,11 @@ import java.util.List;
 @RequestMapping("/feedback")
 public class FeedbackController {
 
-    @Autowired
-    private FeedbackRepository feedbackRepository;
+    private final FeedbackRepository feedbackRepository;
+
+    public FeedbackController(FeedbackRepository feedbackRepository) {
+        this.feedbackRepository = feedbackRepository;
+    }
 
     @PostMapping("/create")
     public Feedback createFeedback(@RequestBody CreateFeedbackRequest createFeedbackRequest) {

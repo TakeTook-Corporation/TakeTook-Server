@@ -4,6 +4,8 @@ import com.example.taketook.utils.Category;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document
 public class Listing {
     @Id
@@ -15,16 +17,18 @@ public class Listing {
     private String dot;
     private Boolean active;
     private Category category;
+    private List<String> imageUrls;
 
     public Listing() {}
 
-    public Listing(String title, String description, String author, String dot, Boolean active, Category category) {
+    public Listing(String title, String description, String author, String dot, Boolean active, Category category, List<String> imageUrls) {
         this.title = title;
         this.description = description;
         this.author = author;
         this.dot = dot;
         this.active = active;
         this.category = category;
+        this.imageUrls = imageUrls;
     }
 
     public String getAuthor() {
@@ -73,5 +77,13 @@ public class Listing {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 }

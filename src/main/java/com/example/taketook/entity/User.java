@@ -16,16 +16,17 @@ public class User {
     private String surname;
     private String email;
     private String phone;
-    private String address; // TODO: make nullable
+    private String address;
     private String city;
     private String password;
+    private String avaUrl;
 
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
     public User() {}
 
-    public User(String name, String surname, String email,  String phone, String address, String city, String password) {
+    public User(String name, String surname, String email,  String phone, String address, String city, String password, String avaUrl) {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -33,6 +34,7 @@ public class User {
         this.address = address;
         this.city = city;
         this.password = password;
+        this.avaUrl = avaUrl;
     }
 
     public void setId(String id) {
@@ -107,15 +109,11 @@ public class User {
         this.password = password;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", phone='" + phone + '\'' +
-                ", address='" + address + '\'' +
-                ", city='" + city + '\'' +
-                '}';
+    public String getAvaUrl() {
+        return avaUrl;
+    }
+
+    public void setAvaUrl(String avaUrl) {
+        this.avaUrl = avaUrl;
     }
 }

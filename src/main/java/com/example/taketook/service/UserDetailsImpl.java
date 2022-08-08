@@ -18,11 +18,12 @@ public class UserDetailsImpl implements UserDetails {
     private String phone;
     private String address;
     private String city;
+    private String avaUrl;
     private Collection<? extends GrantedAuthority> roles;
     @JsonIgnore
     private String password;
 
-    public UserDetailsImpl(String id, String name, String surname, String email, String phone, String address, String city, Collection<? extends GrantedAuthority> roles, String password) {
+    public UserDetailsImpl(String id, String name, String surname, String email, String phone, String address, String city, Collection<? extends GrantedAuthority> roles, String password, String avaUrl) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -32,13 +33,14 @@ public class UserDetailsImpl implements UserDetails {
         this.city = city;
         this.roles = roles;
         this.password = password;
+        this.avaUrl = avaUrl;
     }
 
     static UserDetailsImpl builder(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
                 .collect(Collectors.toList());
-        return new UserDetailsImpl(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhone(), user.getAddress(), user.getCity(), authorities, user.getPassword());
+        return new UserDetailsImpl(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhone(), user.getAddress(), user.getCity(), authorities, user.getPassword(), user.getAvaUrl());
     }
 
     public String getId() {
@@ -69,6 +71,10 @@ public class UserDetailsImpl implements UserDetails {
         return city;
     }
 
+    public String getAvaUrl() {
+        return avaUrl;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
@@ -81,7 +87,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return name + " " + surname;
+        return email;
     }
 
     @Override

@@ -12,12 +12,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/listing")
 public class ListingController {
-    @Autowired
-    private ListingRepository listingRepository;
+    private final ListingRepository listingRepository;
+
+    public ListingController(ListingRepository listingRepository) {
+        this.listingRepository = listingRepository;
+    }
 
     @PostMapping("/create")
     public Listing createListing(@RequestBody CreateListingRequest createListingRequest) {
-        Listing listing = new Listing(createListingRequest.getTitle(), createListingRequest.getDescription(), createListingRequest.getAuthor(), createListingRequest.getDot(), createListingRequest.getActive(), createListingRequest.getCategory());
+        Listing listing = new Listing(createListingRequest.getTitle(), createListingRequest.getDescription(), createListingRequest.getAuthor(), createListingRequest.getDot(), createListingRequest.getActive(), createListingRequest.getCategory(), null);
         return listingRepository.save(listing);
     }
 

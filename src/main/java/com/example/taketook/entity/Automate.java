@@ -24,6 +24,10 @@ public class Automate {
         this.dots = dots;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public Double getLat() {
         return lat;
     }

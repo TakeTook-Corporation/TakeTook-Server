@@ -2,12 +2,12 @@ package com.example.taketook.controllers;
 
 import com.example.taketook.entity.Automate;
 import com.example.taketook.entity.Dot;
+import com.example.taketook.payload.request.AddAutomateRequest;
 import com.example.taketook.payload.request.PutToSellDotRequest;
 import com.example.taketook.payload.request.RentDotRequest;
 import com.example.taketook.repository.AutomateRepository;
 import com.example.taketook.repository.DotRepository;
 import com.example.taketook.utils.RentType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -16,13 +16,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/automate")
 public class AutomateController {
-    // TODO: test!
+    private final AutomateRepository automateRepository;
+    private final DotRepository dotRepository;
 
-    @Autowired
-    private AutomateRepository automateRepository;
-
-    @Autowired
-    private DotRepository dotRepository;
+    public AutomateController(AutomateRepository automateRepository, DotRepository dotRepository) {
+        this.automateRepository = automateRepository;
+        this.dotRepository = dotRepository;
+    }
 
     @PostMapping("/rent")
     public Dot rent(@RequestBody RentDotRequest rentDotRequest) {
@@ -44,6 +44,19 @@ public class AutomateController {
         dot.setRentTariff(putToSellDotRequest.getRentTariff());
         dot.setRentTime(putToSellDotRequest.getRentTime());
         return dotRepository.save(dot);
+    }
+
+    @PostMapping("/addAutomate")
+    public Automate addAutomate(@RequestBody AddAutomateRequest addAutomateRequest) {
+        Automate automate = new Automate(addAutomateRequest.getLat(), addAutomateRequest.getLon(), addAutomateRequest.getAddress(), new ArrayList<>());
+        Automate savedAutomate = automateRepository.save(automate);
+        List<String> dotIds = new ArrayList<>();
+        for(long i = 0; i < addAutomateRequest.getDotCount(); i++) {
+            Dot dot = new Dot(savedAutomate.getId(), null, null, null, null, true);
+            dotIds.add(dotRepository.save(dot).getId());
+        }
+        savedAutomate.setDots(dotIds);
+        return automateRepository.save(savedAutomate);
     }
 
 //    @PostMapping("/pay")
