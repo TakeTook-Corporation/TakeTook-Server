@@ -3,9 +3,10 @@ package com.example.taketook.controllers;
 import com.example.taketook.entity.Comment;
 import com.example.taketook.entity.Role;
 import com.example.taketook.entity.User;
-import com.example.taketook.payload.request.CreateCommentOnUserRequest;
-import com.example.taketook.payload.request.SignInRequest;
-import com.example.taketook.payload.request.SignUpRequest;
+import com.example.taketook.payload.request.UserController.CreateCommentOnUserRequest;
+import com.example.taketook.payload.request.UserController.RateUserRequest;
+import com.example.taketook.payload.request.UserController.SignInRequest;
+import com.example.taketook.payload.request.UserController.SignUpRequest;
 import com.example.taketook.payload.response.JwtResponse;
 import com.example.taketook.payload.response.MessageResponse;
 import com.example.taketook.repository.CommentRepository;
@@ -30,6 +31,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.example.taketook.utils.Constants.DEFAULT_RATING;
 import static com.example.taketook.utils.Support.getExtensionFromFile;
 
 
@@ -61,7 +63,7 @@ public class UserController {
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
-        User user = new User(signUpRequest.getName(), signUpRequest.getSurname(), signUpRequest.getEmail(), signUpRequest.getPhone(), signUpRequest.getAddress(), signUpRequest.getCity(), passwordEncoder.encode(signUpRequest.getPassword()), null, new ArrayList<>());
+        User user = new User(signUpRequest.getName(), signUpRequest.getSurname(), signUpRequest.getEmail(), signUpRequest.getPhone(), signUpRequest.getAddress(), signUpRequest.getCity(), passwordEncoder.encode(signUpRequest.getPassword()), null, DEFAULT_RATING, new HashSet<>(), new ArrayList<>());
         Set<Role> roles = new HashSet<>();
         Role basicRole = roleRepository.findByRole(RoleEnum.BASIC_USER).orElseThrow(RuntimeException::new);
         roles.add(basicRole);
@@ -91,21 +93,41 @@ public class UserController {
             Role role = roleRepository.findByRole(RoleEnum.valueOf(strRole)).orElseThrow(RuntimeException::new);
             roles.add(role);
         }
-        User user = new User(userDetails.getName(), userDetails.getSurname(), userDetails.getEmail(), userDetails.getPhone(), userDetails.getAddress(), userDetails.getCity(), userDetails.getPassword(), userDetails.getAvaUrl(), userDetails.getCommentIds());
+        User user = new User(userDetails.getName(), userDetails.getSurname(), userDetails.getEmail(), userDetails.getPhone(), userDetails.getAddress(), userDetails.getCity(), userDetails.getPassword(), userDetails.getAvaUrl(), userDetails.getRating(), userDetails.getUserRatings(), userDetails.getCommentIds());
         user.setId(userDetails.getId());
         user.setRoles(roles);
         return ResponseEntity.ok(new JwtResponse(jwt, user));
     }
 
+    // TODO: get authorId from jwt in the future
     @PostMapping("/comment")
     public ResponseEntity<?> commentUser(@RequestBody CreateCommentOnUserRequest createCommentRequest) {
         try {
-            User user = userRepository.findById(createCommentRequest.getAuthorId()).orElseThrow(RuntimeException::new);
+            User user = userRepository.findById(createCommentRequest.getUserToRateId()).orElseThrow(RuntimeException::new);
             Comment comment = new Comment(createCommentRequest.getText(), createCommentRequest.getAuthorId(), System.currentTimeMillis());
             String newCommentId = commentRepository.save(comment).getId();
             List<String> commentIds = user.getCommentIds();
             commentIds.add(newCommentId);
             user.setCommentIds(commentIds);
+            if (!user.rate(createCommentRequest.getRating(), createCommentRequest.getAuthorId())) {
+                return ResponseEntity.badRequest().body(new MessageResponse("Rating is incorrect or user has already left rating"));
+            }
+            user.setRating(createCommentRequest.getRating());
+            return ResponseEntity.ok(userRepository.save(user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    // just rate, without comment
+    // TODO: get authorId from jwt in the future
+    @PostMapping("/rate")
+    public ResponseEntity<?> justRateUser(@RequestBody RateUserRequest rateUserRequest) {
+        try {
+            User user = userRepository.findById(rateUserRequest.getUserToRateId()).orElseThrow(RuntimeException::new);
+            if (!user.rate(rateUserRequest.getRating(), rateUserRequest.getAuthorId())) {
+                return ResponseEntity.badRequest().body(new MessageResponse("Rating is incorrect or user has already left rating"));
+            }
             return ResponseEntity.ok(userRepository.save(user));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));

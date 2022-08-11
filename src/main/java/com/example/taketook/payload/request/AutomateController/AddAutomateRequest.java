@@ -1,4 +1,4 @@
-package com.example.taketook.payload.request;
+package com.example.taketook.payload.request.AutomateController;
 
 import java.util.List;
 

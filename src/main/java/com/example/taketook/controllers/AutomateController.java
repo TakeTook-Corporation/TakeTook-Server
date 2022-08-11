@@ -2,9 +2,9 @@ package com.example.taketook.controllers;
 
 import com.example.taketook.entity.Automate;
 import com.example.taketook.entity.Dot;
-import com.example.taketook.payload.request.AddAutomateRequest;
-import com.example.taketook.payload.request.PutToSellDotRequest;
-import com.example.taketook.payload.request.RentDotRequest;
+import com.example.taketook.payload.request.AutomateController.AddAutomateRequest;
+import com.example.taketook.payload.request.AutomateController.PutToSellDotRequest;
+import com.example.taketook.payload.request.AutomateController.RentDotRequest;
 import com.example.taketook.payload.response.MessageResponse;
 import com.example.taketook.repository.AutomateRepository;
 import com.example.taketook.repository.DotRepository;

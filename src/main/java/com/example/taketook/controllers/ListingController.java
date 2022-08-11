@@ -2,8 +2,8 @@ package com.example.taketook.controllers;
 
 import com.example.taketook.entity.Comment;
 import com.example.taketook.entity.Listing;
-import com.example.taketook.payload.request.CreateCommentRequest;
-import com.example.taketook.payload.request.CreateListingRequest;
+import com.example.taketook.payload.request.ListingController.CreateCommentRequest;
+import com.example.taketook.payload.request.ListingController.CreateListingRequest;
 import com.example.taketook.repository.CommentRepository;
 import com.example.taketook.repository.ListingRepository;
 import com.example.taketook.service.FileStorageService;
@@ -34,11 +34,11 @@ public class ListingController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createListing(@RequestPart CreateListingRequest createListingRequest, @RequestParam(value = "files", required = false) MultipartFile[] files) {
-        Listing listing = new Listing(createListingRequest.getTitle(), createListingRequest.getDescription(), createListingRequest.getAuthor(), createListingRequest.getDot(), createListingRequest.getActive(), createListingRequest.getCategory(), new ArrayList<>(), new ArrayList<>(), createListingRequest.getAutomateIds());
+        Listing listing = new Listing(createListingRequest.getTitle(), createListingRequest.getDescription(), createListingRequest.getAuthor(), createListingRequest.getDot(), createListingRequest.getActive(), createListingRequest.getCategory(), new ArrayList<>(), new ArrayList<>(), createListingRequest.getAutomateIds(), createListingRequest.getDeliveryStatuses());
         Listing saved = listingRepository.save(listing);
         if (files.length != 0) {
             List<String> imageUrls = new ArrayList<>();
-            for(int i = 0; i < files.length; i++) {
+            for (int i = 0; i < files.length; i++) {
                 String fileName = saved.getId() + "_" + i + "." + getExtensionFromFile(files[i]);
                 String imageUrl = uploadFile(Constants.LISTING_IMAGE_FOLDER, files[i], fileName);
                 imageUrls.add(imageUrl);

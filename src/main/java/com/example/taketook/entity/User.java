@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Document
@@ -21,6 +22,8 @@ public class User {
     private String city;
     private String password;
     private String avaUrl;
+    private Double rating;
+    private Set<String> userRatings; // amount of people who left ratings
     private List<String> commentIds;
 
     @DBRef
@@ -28,7 +31,7 @@ public class User {
 
     public User() {}
 
-    public User(String name, String surname, String email,  String phone, String address, String city, String password, String avaUrl, List<String> commentIds) {
+    public User(String name, String surname, String email, String phone, String address, String city, String password, String avaUrl, Double rating, Set<String> userRatings, List<String> commentIds) {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -37,7 +40,18 @@ public class User {
         this.city = city;
         this.password = password;
         this.avaUrl = avaUrl;
+        this.rating = rating;
+        this.userRatings = userRatings;
         this.commentIds = commentIds;
+    }
+
+    public boolean rate(Double rating, String userId) {
+        if((rating > 0) && (rating <= 5) && !this.userRatings.contains(userId) && (!Objects.equals(this.id, userId))) {
+            this.userRatings.add(userId);
+            this.rating = (rating + this.rating) / this.userRatings.size();
+            return true;
+        }
+        return false;
     }
 
     public void setId(String id) {
@@ -120,6 +134,22 @@ public class User {
         this.avaUrl = avaUrl;
     }
 
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+    public Set<String> getUserRatings() {
+        return userRatings;
+    }
+
+    public void setUserRatings(Set<String> userRatings) {
+        this.userRatings = userRatings;
+    }
+
     public List<String> getCommentIds() {
         return commentIds;
     }
@@ -127,4 +157,5 @@ public class User {
     public void setCommentIds(List<String> commentIds) {
         this.commentIds = commentIds;
     }
+
 }

@@ -1,10 +1,12 @@
 package com.example.taketook.entity;
 
 import com.example.taketook.utils.Category;
+import com.example.taketook.utils.ListingDeliveryStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Set;
 
 @Document
 public class Listing {
@@ -20,10 +22,11 @@ public class Listing {
     private List<String> imageUrls;
     private List<String> commentIds;
     private List<String> wantedAutomates;
+    private Set<ListingDeliveryStatus> deliveryStatuses;
 
     public Listing() {}
 
-    public Listing(String title, String description, String author, String dot, Boolean active, Category category, List<String> imageUrls, List<String> commentIds, List<String> wantedAutomates) {
+    public Listing(String title, String description, String author, String dot, Boolean active, Category category, List<String> imageUrls, List<String> commentIds, List<String> wantedAutomates, Set<ListingDeliveryStatus> deliveryStatuses) {
         this.title = title;
         this.description = description;
         this.author = author;
@@ -33,6 +36,7 @@ public class Listing {
         this.imageUrls = imageUrls;
         this.commentIds = commentIds;
         this.wantedAutomates = wantedAutomates;
+        this.deliveryStatuses = deliveryStatuses;
     }
 
     public String getAuthor() {
@@ -101,6 +105,14 @@ public class Listing {
 
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
+    }
+
+    public Set<ListingDeliveryStatus> getDeliveryStatuses() {
+        return deliveryStatuses;
+    }
+
+    public void setDeliveryStatuses(Set<ListingDeliveryStatus> deliveryStatuses) {
+        this.deliveryStatuses = deliveryStatuses;
     }
 
     public List<String> getWantedAutomates() {

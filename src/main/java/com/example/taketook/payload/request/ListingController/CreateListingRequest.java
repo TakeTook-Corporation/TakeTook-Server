@@ -1,8 +1,10 @@
-package com.example.taketook.payload.request;
+package com.example.taketook.payload.request.ListingController;
 
 import com.example.taketook.utils.Category;
+import com.example.taketook.utils.ListingDeliveryStatus;
 
 import java.util.List;
+import java.util.Set;
 
 public class CreateListingRequest {
     private String title;
@@ -12,6 +14,7 @@ public class CreateListingRequest {
     private Boolean active;
     private Category category;
     private List<String> automateIds;
+    private Set<ListingDeliveryStatus> deliveryStatuses;
 
     public String getTitle() {
         return title;
@@ -39,5 +42,9 @@ public class CreateListingRequest {
 
     public List<String> getAutomateIds() {
         return automateIds;
+    }
+
+    public Set<ListingDeliveryStatus> getDeliveryStatuses() {
+        return deliveryStatuses;
     }
 }

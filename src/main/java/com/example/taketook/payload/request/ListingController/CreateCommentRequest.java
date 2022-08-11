@@ -1,4 +1,4 @@
-package com.example.taketook.payload.request;
+package com.example.taketook.payload.request.ListingController;
 
 public class CreateCommentRequest {
     private String listingId;

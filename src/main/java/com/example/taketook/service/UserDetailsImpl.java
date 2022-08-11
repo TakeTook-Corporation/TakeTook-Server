@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
@@ -19,12 +20,14 @@ public class UserDetailsImpl implements UserDetails {
     private String address;
     private String city;
     private String avaUrl;
+    private Double rating;
+    private Set<String> userRatings;
     private List<String> commentIds;
     private Collection<? extends GrantedAuthority> roles;
     @JsonIgnore
     private String password;
 
-    public UserDetailsImpl(String id, String name, String surname, String email, String phone, String address, String city, Collection<? extends GrantedAuthority> roles, String password, String avaUrl, List<String> commentIds) {
+    public UserDetailsImpl(String id, String name, String surname, String email, String phone, String address, String city, Double rating, Set<String> userRatings, Collection<? extends GrantedAuthority> roles, String password, String avaUrl, List<String> commentIds) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -32,6 +35,8 @@ public class UserDetailsImpl implements UserDetails {
         this.phone = phone;
         this.address = address;
         this.city = city;
+        this.rating = rating;
+        this.userRatings = userRatings;
         this.roles = roles;
         this.password = password;
         this.avaUrl = avaUrl;
@@ -42,7 +47,7 @@ public class UserDetailsImpl implements UserDetails {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
                 .collect(Collectors.toList());
-        return new UserDetailsImpl(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhone(), user.getAddress(), user.getCity(), authorities, user.getPassword(), user.getAvaUrl(), user.getCommentIds());
+        return new UserDetailsImpl(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhone(), user.getAddress(), user.getCity(), user.getRating(), user.getUserRatings(), authorities, user.getPassword(), user.getAvaUrl(), user.getCommentIds());
     }
 
     public String getId() {
@@ -75,6 +80,14 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getAvaUrl() {
         return avaUrl;
+    }
+
+    public Set<String> getUserRatings() {
+        return userRatings;
+    }
+
+    public Double getRating() {
+        return rating;
     }
 
     public List<String> getCommentIds() {
