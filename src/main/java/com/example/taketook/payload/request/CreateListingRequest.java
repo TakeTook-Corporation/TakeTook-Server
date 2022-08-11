@@ -2,6 +2,8 @@ package com.example.taketook.payload.request;
 
 import com.example.taketook.utils.Category;
 
+import java.util.List;
+
 public class CreateListingRequest {
     private String title;
     private String description;
@@ -9,6 +11,7 @@ public class CreateListingRequest {
     private String dot;
     private Boolean active;
     private Category category;
+    private List<String> automateIds;
 
     public String getTitle() {
         return title;
@@ -32,5 +35,9 @@ public class CreateListingRequest {
 
     public Category getCategory() {
         return category;
+    }
+
+    public List<String> getAutomateIds() {
+        return automateIds;
     }
 }

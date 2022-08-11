@@ -2,6 +2,7 @@ package com.example.taketook.controllers;
 
 import com.example.taketook.entity.Story;
 import com.example.taketook.repository.StoryRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,7 @@ public class StoryController {
 //    }
 
     @GetMapping("")
-    public List<Story> getStories() {
-        return storyRepository.findAll();
+    public ResponseEntity<?> getStories() {
+        return ResponseEntity.ok(storyRepository.findAll());
     }
 }

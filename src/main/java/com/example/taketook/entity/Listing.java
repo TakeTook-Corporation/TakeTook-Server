@@ -18,10 +18,12 @@ public class Listing {
     private Boolean active;
     private Category category;
     private List<String> imageUrls;
+    private List<String> commentIds;
+    private List<String> wantedAutomates;
 
     public Listing() {}
 
-    public Listing(String title, String description, String author, String dot, Boolean active, Category category, List<String> imageUrls) {
+    public Listing(String title, String description, String author, String dot, Boolean active, Category category, List<String> imageUrls, List<String> commentIds, List<String> wantedAutomates) {
         this.title = title;
         this.description = description;
         this.author = author;
@@ -29,6 +31,8 @@ public class Listing {
         this.active = active;
         this.category = category;
         this.imageUrls = imageUrls;
+        this.commentIds = commentIds;
+        this.wantedAutomates = wantedAutomates;
     }
 
     public String getAuthor() {
@@ -79,11 +83,31 @@ public class Listing {
         this.category = category;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public List<String> getCommentIds() {
+        return commentIds;
+    }
+
+    public void setCommentIds(List<String> commentIds) {
+        this.commentIds = commentIds;
+    }
+
     public List<String> getImageUrls() {
         return imageUrls;
     }
 
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
+    }
+
+    public List<String> getWantedAutomates() {
+        return wantedAutomates;
+    }
+
+    public void setWantedAutomates(List<String> wantedAutomates) {
+        this.wantedAutomates = wantedAutomates;
     }
 }

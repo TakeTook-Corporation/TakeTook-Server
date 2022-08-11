@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Document
@@ -20,13 +21,14 @@ public class User {
     private String city;
     private String password;
     private String avaUrl;
+    private List<String> commentIds;
 
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
     public User() {}
 
-    public User(String name, String surname, String email,  String phone, String address, String city, String password, String avaUrl) {
+    public User(String name, String surname, String email,  String phone, String address, String city, String password, String avaUrl, List<String> commentIds) {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -35,6 +37,7 @@ public class User {
         this.city = city;
         this.password = password;
         this.avaUrl = avaUrl;
+        this.commentIds = commentIds;
     }
 
     public void setId(String id) {
@@ -115,5 +118,13 @@ public class User {
 
     public void setAvaUrl(String avaUrl) {
         this.avaUrl = avaUrl;
+    }
+
+    public List<String> getCommentIds() {
+        return commentIds;
+    }
+
+    public void setCommentIds(List<String> commentIds) {
+        this.commentIds = commentIds;
     }
 }

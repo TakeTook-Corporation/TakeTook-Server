@@ -19,11 +19,12 @@ public class UserDetailsImpl implements UserDetails {
     private String address;
     private String city;
     private String avaUrl;
+    private List<String> commentIds;
     private Collection<? extends GrantedAuthority> roles;
     @JsonIgnore
     private String password;
 
-    public UserDetailsImpl(String id, String name, String surname, String email, String phone, String address, String city, Collection<? extends GrantedAuthority> roles, String password, String avaUrl) {
+    public UserDetailsImpl(String id, String name, String surname, String email, String phone, String address, String city, Collection<? extends GrantedAuthority> roles, String password, String avaUrl, List<String> commentIds) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -34,13 +35,14 @@ public class UserDetailsImpl implements UserDetails {
         this.roles = roles;
         this.password = password;
         this.avaUrl = avaUrl;
+        this.commentIds = commentIds;
     }
 
     static UserDetailsImpl builder(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
                 .collect(Collectors.toList());
-        return new UserDetailsImpl(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhone(), user.getAddress(), user.getCity(), authorities, user.getPassword(), user.getAvaUrl());
+        return new UserDetailsImpl(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhone(), user.getAddress(), user.getCity(), authorities, user.getPassword(), user.getAvaUrl(), user.getCommentIds());
     }
 
     public String getId() {
@@ -73,6 +75,10 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getAvaUrl() {
         return avaUrl;
+    }
+
+    public List<String> getCommentIds() {
+        return commentIds;
     }
 
     @Override
