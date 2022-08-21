@@ -8,6 +8,7 @@ public class SignUpRequest {
     private String address;
     private String city;
     private String password;
+    private String pin;
 
     public String getName() {
         return name;
@@ -35,5 +36,9 @@ public class SignUpRequest {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getPin() {
+        return pin;
     }
 }

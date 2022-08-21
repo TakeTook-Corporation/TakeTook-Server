@@ -69,6 +69,16 @@ public class AutomateController {
         return ResponseEntity.ok(automateRepository.save(savedAutomate));
     }
 
+//    public ResponseEntity<?> searchAutomates() {
+//        // TODO: change getting all automates to only current city automates
+//        List<Automate> nearAutomates = new ArrayList<>();
+//        List<Automate> automates = automateRepository.findAll();
+//
+//        for (Automate automate : automates) {
+//
+//        }
+//    }
+
 //    @PostMapping("/pay")
 //    public Dot pay(@RequestBody String listingId) {
 //
@@ -99,4 +109,6 @@ public class AutomateController {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
+
+    // private Double distance()
 }

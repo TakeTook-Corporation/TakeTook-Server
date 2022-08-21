@@ -12,6 +12,7 @@ public class Automate {
 
     private Double lat;
     private Double lon;
+    // private CityEnum city;
     private String address;
     private List<String> dots;
 

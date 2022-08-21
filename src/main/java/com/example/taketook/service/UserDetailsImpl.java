@@ -23,11 +23,12 @@ public class UserDetailsImpl implements UserDetails {
     private Double rating;
     private Set<String> userRatings;
     private List<String> commentIds;
+    private String pin;
     private Collection<? extends GrantedAuthority> roles;
     @JsonIgnore
     private String password;
 
-    public UserDetailsImpl(String id, String name, String surname, String email, String phone, String address, String city, Double rating, Set<String> userRatings, Collection<? extends GrantedAuthority> roles, String password, String avaUrl, List<String> commentIds) {
+    public UserDetailsImpl(String id, String name, String surname, String email, String phone, String address, String city, Double rating, Set<String> userRatings, Collection<? extends GrantedAuthority> roles, String password, String avaUrl, List<String> commentIds, String pin) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -41,13 +42,14 @@ public class UserDetailsImpl implements UserDetails {
         this.password = password;
         this.avaUrl = avaUrl;
         this.commentIds = commentIds;
+        this.pin = pin;
     }
 
     static UserDetailsImpl builder(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
                 .collect(Collectors.toList());
-        return new UserDetailsImpl(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhone(), user.getAddress(), user.getCity(), user.getRating(), user.getUserRatings(), authorities, user.getPassword(), user.getAvaUrl(), user.getCommentIds());
+        return new UserDetailsImpl(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhone(), user.getAddress(), user.getCity(), user.getRating(), user.getUserRatings(), authorities, user.getPassword(), user.getAvaUrl(), user.getCommentIds(), user.getPin());
     }
 
     public String getId() {
@@ -92,6 +94,10 @@ public class UserDetailsImpl implements UserDetails {
 
     public List<String> getCommentIds() {
         return commentIds;
+    }
+
+    public String getPin() {
+        return pin;
     }
 
     @Override

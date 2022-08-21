@@ -3,10 +3,7 @@ package com.example.taketook.controllers;
 import com.example.taketook.entity.Comment;
 import com.example.taketook.entity.Role;
 import com.example.taketook.entity.User;
-import com.example.taketook.payload.request.UserController.CreateCommentOnUserRequest;
-import com.example.taketook.payload.request.UserController.RateUserRequest;
-import com.example.taketook.payload.request.UserController.SignInRequest;
-import com.example.taketook.payload.request.UserController.SignUpRequest;
+import com.example.taketook.payload.request.UserController.*;
 import com.example.taketook.payload.response.JwtResponse;
 import com.example.taketook.payload.response.MessageResponse;
 import com.example.taketook.repository.CommentRepository;
@@ -63,7 +60,7 @@ public class UserController {
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
-        User user = new User(signUpRequest.getName(), signUpRequest.getSurname(), signUpRequest.getEmail(), signUpRequest.getPhone(), signUpRequest.getAddress(), signUpRequest.getCity(), passwordEncoder.encode(signUpRequest.getPassword()), null, DEFAULT_RATING, new HashSet<>(), new ArrayList<>());
+        User user = new User(signUpRequest.getName(), signUpRequest.getSurname(), signUpRequest.getEmail(), signUpRequest.getPhone(), signUpRequest.getAddress(), signUpRequest.getCity(), passwordEncoder.encode(signUpRequest.getPassword()), null, DEFAULT_RATING, new HashSet<>(), signUpRequest.getPin(), new ArrayList<>());
         Set<Role> roles = new HashSet<>();
         Role basicRole = roleRepository.findByRole(RoleEnum.BASIC_USER).orElseThrow(RuntimeException::new);
         roles.add(basicRole);
@@ -81,7 +78,7 @@ public class UserController {
     @PostMapping("/signin")
     public ResponseEntity<?> signInUser(@RequestBody SignInRequest signInRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(signInRequest.getPhone(), signInRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -93,7 +90,7 @@ public class UserController {
             Role role = roleRepository.findByRole(RoleEnum.valueOf(strRole)).orElseThrow(RuntimeException::new);
             roles.add(role);
         }
-        User user = new User(userDetails.getName(), userDetails.getSurname(), userDetails.getEmail(), userDetails.getPhone(), userDetails.getAddress(), userDetails.getCity(), userDetails.getPassword(), userDetails.getAvaUrl(), userDetails.getRating(), userDetails.getUserRatings(), userDetails.getCommentIds());
+        User user = new User(userDetails.getName(), userDetails.getSurname(), userDetails.getEmail(), userDetails.getPhone(), userDetails.getAddress(), userDetails.getCity(), userDetails.getPassword(), userDetails.getAvaUrl(), userDetails.getRating(), userDetails.getUserRatings(), userDetails.getPin(), userDetails.getCommentIds());
         user.setId(userDetails.getId());
         user.setRoles(roles);
         return ResponseEntity.ok(new JwtResponse(jwt, user));
@@ -129,6 +126,16 @@ public class UserController {
                 return ResponseEntity.badRequest().body(new MessageResponse("Rating is incorrect or user has already left rating"));
             }
             return ResponseEntity.ok(userRepository.save(user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/pin")
+    public ResponseEntity<?> checkUserPin(@RequestBody CheckPinRequest checkPinRequest) {
+        try {
+            User user = userRepository.findById(checkPinRequest.getUserId()).orElseThrow(RuntimeException::new);
+            return ResponseEntity.ok(Objects.equals(user.getPin(), checkPinRequest.getPin()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }

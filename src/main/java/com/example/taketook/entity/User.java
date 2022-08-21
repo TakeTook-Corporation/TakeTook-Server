@@ -24,6 +24,7 @@ public class User {
     private String avaUrl;
     private Double rating;
     private Set<String> userRatings; // amount of people who left ratings
+    private String pin;
     private List<String> commentIds;
 
     @DBRef
@@ -31,7 +32,7 @@ public class User {
 
     public User() {}
 
-    public User(String name, String surname, String email, String phone, String address, String city, String password, String avaUrl, Double rating, Set<String> userRatings, List<String> commentIds) {
+    public User(String name, String surname, String email, String phone, String address, String city, String password, String avaUrl, Double rating, Set<String> userRatings, String pin, List<String> commentIds) {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -42,6 +43,7 @@ public class User {
         this.avaUrl = avaUrl;
         this.rating = rating;
         this.userRatings = userRatings;
+        this.pin = pin;
         this.commentIds = commentIds;
     }
 
@@ -148,6 +150,14 @@ public class User {
 
     public void setUserRatings(Set<String> userRatings) {
         this.userRatings = userRatings;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 
     public List<String> getCommentIds() {
