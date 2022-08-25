@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -48,5 +49,10 @@ public class TakeTookApplication implements CommandLineRunner {
     @Bean
     public AuthEntryPointJwt authEntryPointJwtBean() {
         return new AuthEntryPointJwt();
+    }
+
+    @Bean
+    public RestTemplateBuilder restTemplateBuilder() {
+        return new RestTemplateBuilder();
     }
 }

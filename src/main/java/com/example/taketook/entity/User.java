@@ -24,15 +24,17 @@ public class User {
     private String avaUrl;
     private Double rating;
     private Set<String> userRatings; // amount of people who left ratings
-    private String pin;
     private List<String> commentIds;
+
+    private String verifyCode;
+    private Long verifyExpireDate;
 
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
     public User() {}
 
-    public User(String name, String surname, String email, String phone, String address, String city, String password, String avaUrl, Double rating, Set<String> userRatings, String pin, List<String> commentIds) {
+    public User(String name, String surname, String email, String phone, String address, String city, String password, String avaUrl, Double rating, Set<String> userRatings, List<String> commentIds, String verifyCode, Long verifyExpireDate) {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -43,8 +45,9 @@ public class User {
         this.avaUrl = avaUrl;
         this.rating = rating;
         this.userRatings = userRatings;
-        this.pin = pin;
         this.commentIds = commentIds;
+        this.verifyCode = verifyCode;
+        this.verifyExpireDate = verifyExpireDate;
     }
 
     public boolean rate(Double rating, String userId) {
@@ -152,14 +155,6 @@ public class User {
         this.userRatings = userRatings;
     }
 
-    public String getPin() {
-        return pin;
-    }
-
-    public void setPin(String pin) {
-        this.pin = pin;
-    }
-
     public List<String> getCommentIds() {
         return commentIds;
     }
@@ -168,4 +163,19 @@ public class User {
         this.commentIds = commentIds;
     }
 
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
+    }
+
+    public Long getVerifyExpireDate() {
+        return verifyExpireDate;
+    }
+
+    public void setVerifyExpireDate(Long verifyExpireDate) {
+        this.verifyExpireDate = verifyExpireDate;
+    }
 }

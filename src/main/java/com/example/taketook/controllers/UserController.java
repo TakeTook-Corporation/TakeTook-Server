@@ -4,17 +4,19 @@ import com.example.taketook.entity.Comment;
 import com.example.taketook.entity.Role;
 import com.example.taketook.entity.User;
 import com.example.taketook.payload.request.UserController.*;
+import com.example.taketook.payload.response.BytehandResponse;
 import com.example.taketook.payload.response.JwtResponse;
 import com.example.taketook.payload.response.MessageResponse;
 import com.example.taketook.repository.CommentRepository;
 import com.example.taketook.repository.RoleRepository;
 import com.example.taketook.repository.UserRepository;
 import com.example.taketook.service.FileStorageService;
+import com.example.taketook.service.RestService;
 import com.example.taketook.service.UserDetailsImpl;
 import com.example.taketook.utils.Constants;
 import com.example.taketook.utils.JwtUtils;
 import com.example.taketook.utils.RoleEnum;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,8 +44,9 @@ public class UserController {
     private final RoleRepository roleRepository;
     private final FileStorageService fileStorageService;
     private final CommentRepository commentRepository;
+    private final RestService restService;
 
-    public UserController(JwtUtils jwtUtils, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, FileStorageService fileStorageService, CommentRepository commentRepository) {
+    public UserController(JwtUtils jwtUtils, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, FileStorageService fileStorageService, CommentRepository commentRepository, RestService restService) {
         this.jwtUtils = jwtUtils;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
@@ -51,6 +54,7 @@ public class UserController {
         this.roleRepository = roleRepository;
         this.fileStorageService = fileStorageService;
         this.commentRepository = commentRepository;
+        this.restService = restService;
     }
 
     @PostMapping("/signup")
@@ -60,7 +64,7 @@ public class UserController {
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
-        User user = new User(signUpRequest.getName(), signUpRequest.getSurname(), signUpRequest.getEmail(), signUpRequest.getPhone(), signUpRequest.getAddress(), signUpRequest.getCity(), passwordEncoder.encode(signUpRequest.getPassword()), null, DEFAULT_RATING, new HashSet<>(), signUpRequest.getPin(), new ArrayList<>());
+        User user = new User(signUpRequest.getName(), signUpRequest.getSurname(), signUpRequest.getEmail(), signUpRequest.getPhone(), signUpRequest.getAddress(), signUpRequest.getCity(), passwordEncoder.encode(signUpRequest.getPassword()), null, DEFAULT_RATING, new HashSet<>(), new ArrayList<>(), null, null);
         Set<Role> roles = new HashSet<>();
         Role basicRole = roleRepository.findByRole(RoleEnum.BASIC_USER).orElseThrow(RuntimeException::new);
         roles.add(basicRole);
@@ -90,10 +94,23 @@ public class UserController {
             Role role = roleRepository.findByRole(RoleEnum.valueOf(strRole)).orElseThrow(RuntimeException::new);
             roles.add(role);
         }
-        User user = new User(userDetails.getName(), userDetails.getSurname(), userDetails.getEmail(), userDetails.getPhone(), userDetails.getAddress(), userDetails.getCity(), userDetails.getPassword(), userDetails.getAvaUrl(), userDetails.getRating(), userDetails.getUserRatings(), userDetails.getPin(), userDetails.getCommentIds());
+        User user = new User(userDetails.getName(), userDetails.getSurname(), userDetails.getEmail(), userDetails.getPhone(), userDetails.getAddress(), userDetails.getCity(), userDetails.getPassword(), userDetails.getAvaUrl(), userDetails.getRating(), userDetails.getUserRatings(), userDetails.getCommentIds(), null, null);
         user.setId(userDetails.getId());
         user.setRoles(roles);
+
         return ResponseEntity.ok(new JwtResponse(jwt, user));
+    }
+
+    @PostMapping("/loginPhone")
+    public ResponseEntity<?> singInWithPhone(@RequestBody SignInWithPhoneRequest signInWithPhoneRequest) {
+        User user = userRepository.findByPhone(signInWithPhoneRequest.getPhone()).orElseThrow(RuntimeException::new);
+        String generatedCode = generateCode();
+        sendSms(generatedCode, signInWithPhoneRequest.getPhone());
+
+        user.setVerifyCode(generatedCode);
+        user.setVerifyExpireDate(System.currentTimeMillis() + 1000 * 60 * 5);
+
+        return ResponseEntity.ok(new MessageResponse("Code was sent"));
     }
 
     // TODO: get authorId from jwt in the future
@@ -131,22 +148,46 @@ public class UserController {
         }
     }
 
-    @PostMapping("/pin")
-    public ResponseEntity<?> checkUserPin(@RequestBody CheckPinRequest checkPinRequest) {
-        try {
-            User user = userRepository.findById(checkPinRequest.getUserId()).orElseThrow(RuntimeException::new);
-            return ResponseEntity.ok(Objects.equals(user.getPin(), checkPinRequest.getPin()));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-        }
-    }
-
     public String uploadFile(Path path, MultipartFile file, String fileName) {
         try {
             fileStorageService.save(file, path, fileName);
             return Constants.SITE_URI + Constants.GET_FILE_SUB_URL + "users/" + fileName;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    private String generateCode() {
+        Random rnd = new Random();
+        int number = rnd.nextInt(999999);
+
+        return String.format("%06d", number);
+    }
+
+    private ResponseEntity<?> sendSms(String generatedCode, String phone) {
+        String url = "https://api.bytehand.com/v2/sms/messages";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.set("X-Service-Key", "let's hide");
+
+//        "sender": "Sell Cell",
+//                "receiver": "+79304104611",
+//                "text": "\nПривет, Яна! Когда-нибудь тут будет твой код верификации!"
+        Map<String, Object> map = new HashMap<>();
+        map.put("sender", "Sell Cell");
+        map.put("receiver", "+79653444765");
+        map.put("text", "\nПривет, Яна! Когда-нибудь тут будет твой код верификации!");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+
+        ResponseEntity<BytehandResponse> response = restService.restTemplate.postForEntity(url, entity, BytehandResponse.class);
+
+        if (response.getStatusCode() == HttpStatus.CREATED) {
+            return ResponseEntity.ok(response.getBody());
+        } else {
+            return ResponseEntity.ok(new MessageResponse(response.getStatusCode().name()));
         }
     }
 }
