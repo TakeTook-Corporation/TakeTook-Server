@@ -84,11 +84,13 @@ public class UserController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(signInRequest.getPhone(), signInRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+        String jwt = jwtUtils.generateJwtToken(signInRequest.getPhone());
+
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> strRoles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
+
         Set<Role> roles = new HashSet<>();
         for (String strRole : strRoles) {
             Role role = roleRepository.findByRole(RoleEnum.valueOf(strRole)).orElseThrow(RuntimeException::new);
@@ -110,7 +112,26 @@ public class UserController {
         user.setVerifyCode(generatedCode);
         user.setVerifyExpireDate(System.currentTimeMillis() + 1000 * 60 * 5);
 
+        userRepository.save(user);
+
         return ResponseEntity.ok(new MessageResponse("Code was sent"));
+    }
+
+    @PostMapping("/checkCode")
+    public ResponseEntity<?> checkPhoneCode(@RequestBody CheckPhoneCodeRequest checkPhoneCodeRequest) {
+        User user = userRepository.findByPhone(checkPhoneCodeRequest.getPhone()).orElseThrow(RuntimeException::new);
+
+        if (Objects.equals(user.getVerifyCode(), checkPhoneCodeRequest.getCode()) && user.getVerifyExpireDate() >= System.currentTimeMillis()) {
+            user.setVerifyCode(null);
+            user.setVerifyExpireDate(null);
+
+            userRepository.save(user);
+
+            String jwt = jwtUtils.generateJwtToken(checkPhoneCodeRequest.getPhone());
+            return ResponseEntity.ok(new JwtResponse(jwt, user));
+        }
+
+        return ResponseEntity.ok(new MessageResponse("Code is incorrect or expired"));
     }
 
     // TODO: get authorId from jwt in the future
@@ -170,15 +191,12 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("X-Service-Key", "let's hide");
+        headers.set("X-Service-Key", "uzxIlGiwNV6aFpCG8C4UyeWhoOvZ4YVx");
 
-//        "sender": "Sell Cell",
-//                "receiver": "+79304104611",
-//                "text": "\nПривет, Яна! Когда-нибудь тут будет твой код верификации!"
         Map<String, Object> map = new HashMap<>();
         map.put("sender", "Sell Cell");
-        map.put("receiver", "+79653444765");
-        map.put("text", "\nПривет, Яна! Когда-нибудь тут будет твой код верификации!");
+        map.put("receiver", phone);
+        map.put("text", "\nВаш код доступа в приложении: " + generatedCode + ".\nДействителен в течение 5 минут");
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 

@@ -3,8 +3,6 @@ package com.example.taketook;
 import com.example.taketook.service.FileStorageService;
 import com.example.taketook.service.UserDetailsServiceImpl;
 import com.example.taketook.utils.AuthEntryPointJwt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,11 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.annotation.Resource;
-import javax.sql.DataSource;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 
 @SpringBootApplication
 public class TakeTookApplication implements CommandLineRunner {

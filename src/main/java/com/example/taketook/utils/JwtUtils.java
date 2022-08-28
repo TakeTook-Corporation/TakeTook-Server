@@ -1,12 +1,10 @@
 package com.example.taketook.utils;
 
-import com.example.taketook.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -19,16 +17,15 @@ public class JwtUtils {
     @Value("${taketook.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    public String generateJwtToken(Authentication authentication) {
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+    public String generateJwtToken(String phone) {
         return Jwts.builder()
-                .setSubject(userPrincipal.getEmail())
+                .setSubject(phone)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
-    public String getUserNameFromJwtToken(String token) {
+    public String getPhoneFromToken(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
     public boolean validateJwtToken(String authToken) {
