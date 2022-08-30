@@ -18,6 +18,10 @@ public class Story {
         this.infoIconUrl = infoIconUrl;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getIconUrl() {
         return iconUrl;
     }
