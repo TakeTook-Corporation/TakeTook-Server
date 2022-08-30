@@ -84,7 +84,6 @@ public class UserController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(signInRequest.getPhone(), signInRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(signInRequest.getPhone());
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> strRoles = userDetails.getAuthorities().stream()
@@ -99,6 +98,8 @@ public class UserController {
         User user = new User(userDetails.getName(), userDetails.getSurname(), userDetails.getEmail(), userDetails.getPhone(), userDetails.getAddress(), userDetails.getCity(), userDetails.getPassword(), userDetails.getAvaUrl(), userDetails.getRating(), userDetails.getUserRatings(), userDetails.getCommentIds(), null, null);
         user.setId(userDetails.getId());
         user.setRoles(roles);
+
+        String jwt = jwtUtils.generateJwtToken(userDetails.getId());
 
         return ResponseEntity.ok(new JwtResponse(jwt, user));
     }
@@ -127,24 +128,32 @@ public class UserController {
 
             userRepository.save(user);
 
-            String jwt = jwtUtils.generateJwtToken(checkPhoneCodeRequest.getPhone());
+            String jwt = jwtUtils.generateJwtToken(user.getId());
             return ResponseEntity.ok(new JwtResponse(jwt, user));
         }
 
         return ResponseEntity.ok(new MessageResponse("Code is incorrect or expired"));
     }
 
-    // TODO: get authorId from jwt in the future
     @PostMapping("/comment")
-    public ResponseEntity<?> commentUser(@RequestBody CreateCommentOnUserRequest createCommentRequest) {
+    public ResponseEntity<?> commentUser(@RequestHeader("jwt") String jwt, @RequestBody CreateCommentOnUserRequest createCommentRequest) {
         try {
+            String id = jwtUtils.getIdFromToken(jwt);
+
+            if (!userRepository.existsById(id)) {
+                return ResponseEntity.badRequest().body(new MessageResponse("User doesnt exist"));
+            }
+
             User user = userRepository.findById(createCommentRequest.getUserToRateId()).orElseThrow(RuntimeException::new);
-            Comment comment = new Comment(createCommentRequest.getText(), createCommentRequest.getAuthorId(), System.currentTimeMillis());
+
+            Comment comment = new Comment(createCommentRequest.getText(), id, System.currentTimeMillis());
             String newCommentId = commentRepository.save(comment).getId();
             List<String> commentIds = user.getCommentIds();
+
             commentIds.add(newCommentId);
             user.setCommentIds(commentIds);
-            if (!user.rate(createCommentRequest.getRating(), createCommentRequest.getAuthorId())) {
+
+            if (!user.rate(createCommentRequest.getRating(), id)) {
                 return ResponseEntity.badRequest().body(new MessageResponse("Rating is incorrect or user has already left rating"));
             }
             user.setRating(createCommentRequest.getRating());
@@ -155,12 +164,18 @@ public class UserController {
     }
 
     // just rate, without comment
-    // TODO: get authorId from jwt in the future
     @PostMapping("/rate")
-    public ResponseEntity<?> justRateUser(@RequestBody RateUserRequest rateUserRequest) {
+    public ResponseEntity<?> justRateUser(@RequestHeader("jwt") String jwt, @RequestBody RateUserRequest rateUserRequest) {
         try {
+            String id = jwtUtils.getIdFromToken(jwt);
+
+            if (!userRepository.existsById(id)) {
+                return ResponseEntity.badRequest().body(new MessageResponse("User with this id doesnt exist"));
+            }
+
             User user = userRepository.findById(rateUserRequest.getUserToRateId()).orElseThrow(RuntimeException::new);
-            if (!user.rate(rateUserRequest.getRating(), rateUserRequest.getAuthorId())) {
+
+            if (!user.rate(rateUserRequest.getRating(), id)) {
                 return ResponseEntity.badRequest().body(new MessageResponse("Rating is incorrect or user has already left rating"));
             }
             return ResponseEntity.ok(userRepository.save(user));
@@ -191,7 +206,7 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("X-Service-Key", "");
+        headers.set("X-Service-Key", "uzxIlGiwNV6aFpCG8C4UyeWhoOvZ4YVx");
 
         Map<String, Object> map = new HashMap<>();
         map.put("sender", "Sell Cell");

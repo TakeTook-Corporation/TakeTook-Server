@@ -17,15 +17,15 @@ public class JwtUtils {
     @Value("${taketook.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    public String generateJwtToken(String phone) {
+    public String generateJwtToken(String id) {
         return Jwts.builder()
-                .setSubject(phone)
+                .setSubject(id)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
-    public String getPhoneFromToken(String token) {
+    public String getIdFromToken(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
     public boolean validateJwtToken(String authToken) {

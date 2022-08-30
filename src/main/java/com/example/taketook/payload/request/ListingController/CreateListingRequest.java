@@ -9,7 +9,6 @@ import java.util.Set;
 public class CreateListingRequest {
     private String title;
     private String description;
-    private String author;
     private String dot;
     private Boolean active;
     private Category category;
@@ -22,10 +21,6 @@ public class CreateListingRequest {
 
     public String getDescription() {
         return description;
-    }
-
-    public String getAuthor() {
-        return author;
     }
 
     public String getDot() {
