@@ -206,7 +206,7 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("X-Service-Key", "uzxIlGiwNV6aFpCG8C4UyeWhoOvZ4YVx");
+        headers.set("X-Service-Key", "");
 
         Map<String, Object> map = new HashMap<>();
         map.put("sender", "Sell Cell");
