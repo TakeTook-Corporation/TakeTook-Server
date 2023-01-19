@@ -22,7 +22,10 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private String password;
 
-    public UserDetailsImpl(Integer id, String name, String surname, String email, String phone, String address, String city, Collection<? extends GrantedAuthority> roles, String password) {
+    public UserDetailsImpl(Integer id, String name, String surname,
+                           String email, String phone, String address,
+                           String city, Collection<? extends GrantedAuthority> roles,
+                           String password) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -38,7 +41,17 @@ public class UserDetailsImpl implements UserDetails {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
                 .collect(Collectors.toList());
-        return new UserDetailsImpl(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhone(), user.getAddress(), user.getCity(), authorities, user.getPassword());
+        return new UserDetailsImpl(
+                                    user.getId(),
+                                    user.getName(),
+                                    user.getSurname(),
+                                    user.getEmail(),
+                                    user.getPhone(),
+                                    user.getAddress(),
+                                    user.getCity(),
+                                    authorities,
+                                    user.getPassword()
+                                 );
     }
 
     public Integer getId() {

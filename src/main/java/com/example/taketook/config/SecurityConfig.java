@@ -65,8 +65,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // rules for all paths.
         // can be changed to decorators in controllers
         http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(errorHandler)
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().authorizeRequests().anyRequest().permitAll();
+                   .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                   .and().authorizeRequests().anyRequest().permitAll();
 
         http.csrf().disable();
         http.headers().frameOptions().disable();
