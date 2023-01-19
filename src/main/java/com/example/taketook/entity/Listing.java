@@ -20,7 +20,8 @@ public class Listing {
 
     public Listing() {}
 
-    public Listing(String title, String description, String author, String dot, Boolean active, Category category) {
+    public Listing(String title, String description, String author,
+                   String dot, Boolean active, Category category) {
         this.title = title;
         this.description = description;
         this.author = author;

@@ -16,7 +16,7 @@ public class User {
     private String surname;
     private String email;
     private String phone;
-    private String address; // TODO: make nullable
+    private String address;
     private String city;
     private String password;
 
@@ -28,7 +28,9 @@ public class User {
 
     public User() {}
 
-    public User(String name, String surname, String email,  String phone, String address, String city, String password) {
+    public User(String name, String surname, String email,
+                String phone, String address, String city,
+                String password) {
         this.name = name;
         this.surname = surname;
         this.email = email;

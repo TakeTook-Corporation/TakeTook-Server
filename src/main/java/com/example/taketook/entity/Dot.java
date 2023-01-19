@@ -17,10 +17,10 @@ public class Dot {
     private Integer id;
 
     private String automateId;
-    private String listingId; // TODO: make nullable
+    private String listingId;
     private RentTariff rentTariff;
     private RentType rentType;
-    private Long rentTime; // TODO: make nullable
+    private Long rentTime;
     private Boolean free;
 
     public Dot() {}
