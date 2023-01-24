@@ -5,6 +5,7 @@ import com.example.taketook.payload.request.CreateListingRequest;
 import com.example.taketook.repository.ListingRepository;
 import com.example.taketook.utils.Category;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,7 +19,8 @@ public class ListingController {
     }
 
     @PostMapping("/create")
-    public Listing createListing(@RequestBody CreateListingRequest createListingRequest) {
+    public Listing createListing(@RequestPart("listing_data") CreateListingRequest createListingRequest,
+                                 @RequestParam(required = false) MultipartFile image) {
         Listing listing = new Listing(
                                         createListingRequest.getTitle(),
                                         createListingRequest.getDescription(),
