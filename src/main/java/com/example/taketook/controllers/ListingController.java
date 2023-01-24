@@ -8,6 +8,7 @@ import com.example.taketook.repository.UserRepository;
 import com.example.taketook.service.storage.StorageService;
 import com.example.taketook.utils.Category;
 import com.example.taketook.utils.JwtUtils;
+import com.example.taketook.utils.Support;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +56,7 @@ public class ListingController {
                                         createListingRequest.getCity(),
                                         createListingRequest.getUsingAutomate(),
                                         createListingRequest.getDescription(),
-                                        token,
+                                        author.toString(),
                                         createListingRequest.getDot(),
                                         true,
                                         createListingRequest.getCategory()
@@ -63,7 +64,7 @@ public class ListingController {
         listingRepository.save(listing);
 
         if (image != null) {
-            listing.setIconLink(uploadAvatar(image, listing.getId(), storageService));
+            listing.setIconLink(uploadAvatar(image, listing.getId(), storageService, Support.ImageType.LISTING));
             listingRepository.save(listing);
         }
 

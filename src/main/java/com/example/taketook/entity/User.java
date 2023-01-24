@@ -19,6 +19,7 @@ public class User {
     private String address;
     private String city;
     private String password;
+    private String avatarUrl;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinTable(name = "user_roles",
@@ -30,7 +31,7 @@ public class User {
 
     public User(String name, String surname, String email,
                 String phone, String address, String city,
-                String password) {
+                String password, String avatarUrl) {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -38,6 +39,7 @@ public class User {
         this.address = address;
         this.city = city;
         this.password = password;
+        this.avatarUrl = avatarUrl;
     }
 
     public Integer getId() {
@@ -110,6 +112,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     @Override

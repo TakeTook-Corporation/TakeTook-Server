@@ -9,6 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 import static com.example.taketook.utils.ErrorMessages.IMAGE_HOST_URI;
 
 public class Support {
+
+    public enum ImageType {
+        LISTING,
+        USER
+    }
     public static Integer getUserId(String token, JwtUtils jwtUtils, UserRepository userRepository) {
         try {
             String email = jwtUtils.getUserNameFromJwtToken(token);
@@ -19,9 +24,17 @@ public class Support {
         }
     }
 
-    public static String uploadAvatar(MultipartFile image, Integer listingId, StorageService storageService) {
-        String imagePath = IMAGE_HOST_URI + "listing_" + listingId.toString() + ".png";
-        storageService.store(image, "listing_" + listingId.toString() + ".png");
+    public static String uploadAvatar(MultipartFile image, Integer listingId,
+                                      StorageService storageService, ImageType imageType) {
+        if (imageType == ImageType.LISTING) {
+            String imagePath = IMAGE_HOST_URI + "listings/listing_" + listingId.toString() + ".png";
+            storageService.store(image, "listings/listing_" + listingId.toString() + ".png");
+
+            return imagePath;
+        }
+
+        String imagePath = IMAGE_HOST_URI + "users/user_" + listingId.toString() + ".png";
+        storageService.store(image, "users/user_" + listingId.toString() + ".png");
 
         return imagePath;
     }
