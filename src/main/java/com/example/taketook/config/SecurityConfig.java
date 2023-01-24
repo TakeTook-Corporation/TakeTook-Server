@@ -68,6 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                    .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                    .and().authorizeRequests().anyRequest().permitAll();
 
+
         http.csrf().disable();
         http.headers().frameOptions().disable();
     }

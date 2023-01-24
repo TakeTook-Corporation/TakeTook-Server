@@ -27,9 +27,7 @@ public class StorageServiceImpl implements StorageService {
     public void init() {
         try {
             Files.createDirectory(rootLocation);
-        } catch (IOException exception) {
-            throw new StorageException(exception.getMessage(), exception);
-        }
+        } catch (IOException ignored) { }
     }
 
     @Override
