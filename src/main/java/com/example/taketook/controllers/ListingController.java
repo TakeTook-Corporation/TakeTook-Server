@@ -1,7 +1,6 @@
 package com.example.taketook.controllers;
 
 import com.example.taketook.entity.Listing;
-import com.example.taketook.entity.User;
 import com.example.taketook.payload.request.CreateListingRequest;
 import com.example.taketook.payload.response.MessageResponse;
 import com.example.taketook.repository.ListingRepository;
@@ -9,7 +8,6 @@ import com.example.taketook.repository.UserRepository;
 import com.example.taketook.service.storage.StorageService;
 import com.example.taketook.utils.Category;
 import com.example.taketook.utils.JwtUtils;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 import static com.example.taketook.utils.ErrorMessages.*;
+import static com.example.taketook.utils.Support.getUserId;
+import static com.example.taketook.utils.Support.uploadAvatar;
 
 @RestController
 @RequestMapping("/listing")
@@ -43,7 +43,7 @@ public class ListingController {
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                         @RequestPart("listing_data") CreateListingRequest createListingRequest,
                                         @RequestParam(required = false) MultipartFile image) {
-        Integer author = getUserId(token);
+        Integer author = getUserId(token, jwtUtils, userRepository);
         if (author == -1) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(INCORRECT_JWT));
         }
@@ -63,28 +63,11 @@ public class ListingController {
         listingRepository.save(listing);
 
         if (image != null) {
-            listing.setIconLink(uploadAvatar(image, listing.getId()));
+            listing.setIconLink(uploadAvatar(image, listing.getId(), storageService));
             listingRepository.save(listing);
         }
 
         return ResponseEntity.ok(listing);
-    }
-
-    private Integer getUserId(String token) {
-        try {
-            String email = jwtUtils.getUserNameFromJwtToken(token);
-            User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
-            return user.getId();
-        } catch (SignatureException exception) {
-            return -1;
-        }
-    }
-
-    private String uploadAvatar(MultipartFile image, Integer listingId) {
-        String imagePath = IMAGE_HOST_URI + "listing_" + listingId.toString() + ".png";
-        storageService.store(image, "listing_" + listingId.toString() + ".png");
-
-        return imagePath;
     }
 
     @GetMapping("/all")

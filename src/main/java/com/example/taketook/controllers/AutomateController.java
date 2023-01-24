@@ -4,30 +4,44 @@ import com.example.taketook.entity.Automate;
 import com.example.taketook.entity.Dot;
 import com.example.taketook.payload.request.PutToSellDotRequest;
 import com.example.taketook.payload.request.RentDotRequest;
+import com.example.taketook.payload.response.MessageResponse;
 import com.example.taketook.repository.AutomateRepository;
 import com.example.taketook.repository.DotRepository;
+import com.example.taketook.repository.UserRepository;
+import com.example.taketook.utils.JwtUtils;
 import com.example.taketook.utils.RentType;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
-import static com.example.taketook.utils.ErrorMessages.AUTOMATE_NOT_FOUND;
-import static com.example.taketook.utils.ErrorMessages.DOT_NOT_FOUND;
+import static com.example.taketook.utils.ErrorMessages.*;
+import static com.example.taketook.utils.Support.getUserId;
 
 @RestController
 @RequestMapping("/automate")
 public class AutomateController {
-    // TODO: test!
     private final AutomateRepository automateRepository;
     private final DotRepository dotRepository;
+    private final JwtUtils jwtUtils;
+    private final UserRepository userRepository;
 
-    public AutomateController(AutomateRepository automateRepository, DotRepository dotRepository) {
+    public AutomateController(AutomateRepository automateRepository, DotRepository dotRepository, JwtUtils jwtUtils, UserRepository userRepository) {
         this.automateRepository = automateRepository;
         this.dotRepository = dotRepository;
+        this.jwtUtils = jwtUtils;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/rent")
-    public Dot rent(@RequestBody RentDotRequest rentDotRequest) {
+    public ResponseEntity<?> rent(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                  @RequestBody RentDotRequest rentDotRequest) {
+        Integer userId = getUserId(token, jwtUtils, userRepository);
+        if (userId == -1) return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new MessageResponse(INCORRECT_JWT));
+
         Dot dot = dotRepository.findById(rentDotRequest.getDotId())
                             .orElseThrow(() -> new RuntimeException(DOT_NOT_FOUND));
 
@@ -38,11 +52,16 @@ public class AutomateController {
         dot.setRentTariff(rentDotRequest.getRentTariff());
         dot.setRentTime(rentDotRequest.getRentTime());
 
-        return dotRepository.save(dot);
+        return ResponseEntity.ok(dotRepository.save(dot));
     }
 
     @PostMapping("/sell")
-    public Dot putToSell(@RequestBody PutToSellDotRequest putToSellDotRequest) {
+    public ResponseEntity<?> putToSell(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                       @RequestBody PutToSellDotRequest putToSellDotRequest) {
+        Integer userId = getUserId(token, jwtUtils, userRepository);
+        if (userId == -1) return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new MessageResponse(INCORRECT_JWT));
+
         Dot dot = dotRepository.findById(putToSellDotRequest.getDotId())
                             .orElseThrow(() -> new RuntimeException(DOT_NOT_FOUND));
 
@@ -53,7 +72,7 @@ public class AutomateController {
         dot.setRentTariff(putToSellDotRequest.getRentTariff());
         dot.setRentTime(putToSellDotRequest.getRentTime());
 
-        return dotRepository.save(dot);
+        return ResponseEntity.ok(dotRepository.save(dot));
     }
 
     @GetMapping("/address/{addr}")
